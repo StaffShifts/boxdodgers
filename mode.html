@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Difficulty</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #fff;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select Difficulty</h1>
+    <button onclick="window.location.href='/game/easy'">Easy</button>
+    <button onclick="window.location.href='/game/medium'">Medium</button>
+    <button onclick="window.location.href='/game/hard'">Hard</button>
+</body>
+</html>

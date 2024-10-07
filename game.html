@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dodge the Blocks</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .game-container {
+            width: 400px; /* Width of the game box */
+            height: 600px; /* Height of the game box */
+            background-color: white; /* Background color of the game box */
+            border: 2px solid #000; /* Border around the game box */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Shadow for the box */
+            position: relative; /* Positioning for the canvas */
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const blockSize = 30; // Size of the player block
+        let player = { x: canvas.width / 2 - blockSize / 2, y: 570, width: blockSize, height: blockSize }; // Positioned at the bottom
+        let blocks = [];
+        let difficulty = "{{ difficulty }}"; // Placeholder for difficulty
+        let speed = 2;
+        let blockInterval = 1000; // Time interval for creating new blocks
+        let score = 0;
+
+        // Set canvas size to match the game box
+        canvas.width = 400; // Match this with the width of the game container
+        canvas.height = 600; // Match this with the height of the game container
+
+        // Set speed and block interval based on difficulty
+        if (difficulty === "medium") {
+            speed = 3;
+            blockInterval = 800;
+        } else if (difficulty === "hard") {
+            speed = 4;
+            blockInterval = 600;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && player.x > 0) {
+                player.x -= 15; // Move left
+            } else if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) {
+                player.x += 15; // Move right
+            }
+        });
+
+        function createBlock() {
+            const x = Math.random() * (canvas.width - blockSize);
+            // Ensure that new blocks do not overlap with existing blocks
+            if (!blocks.some(block => block.x < x + blockSize && block.x + blockSize > x)) {
+                blocks.push({ x: x, y: 0, width: blockSize, height: blockSize });
+            }
+        }
+
+        function drawPlayer() {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawBlocks() {
+            ctx.fillStyle = 'red';
+            blocks.forEach(block => {
+                ctx.fillRect(block.x, block.y, block.width, block.height);
+            });
+        }
+
+        function updateBlocks() {
+            for (let i = 0; i < blocks.length; i++) {
+                blocks[i].y += speed; // Move blocks down
+                if (blocks[i].y > canvas.height) {
+                    blocks.splice(i, 1); // Remove block if it goes off screen
+                    score++;
+                }
+                // Collision detection
+                if (
+                    player.x < blocks[i].x + blocks[i].width &&
+                    player.x + player.width > blocks[i].x &&
+                    player.y < blocks[i].y + blocks[i].height &&
+                    player.y + player.height > blocks[i].y
+                ) {
+                    alert('Game Over! Your score: ' + score);
+                    window.location.href = '/'; // Redirect back to the homepage
+                    return; // Stop checking further after game over
+                }
+            }
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'black';
+            ctx.font = '24px Arial';
+            ctx.fillText('Score: ' + score, 10, 30);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawBlocks();
+            drawScore();
+            updateBlocks();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start the game
+        setInterval(createBlock, blockInterval);
+        gameLoop();
+    </script>
+</body>
+</html>
